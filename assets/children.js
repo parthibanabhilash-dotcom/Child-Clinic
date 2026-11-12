@@ -2,7 +2,52 @@
 toggle?.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');nav.classList.toggle('open',open)});
 nav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');toggle.setAttribute('aria-expanded','false');toggle.setAttribute('aria-label','Open navigation')}));
 const date=document.querySelector('input[type=date]');if(date){const d=new Date();date.min=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
-document.querySelector('#visit-form')?.addEventListener('submit',e=>{e.preventDefault();const status=document.querySelector('#form-status');status.textContent='Your visit request is ready for this preview. No details have been sent and no appointment has been booked.';status.hidden=false});
+function clinicWhatsAppUrl(message) {
+  const number = String(window.CLINIC_CONFIG?.whatsappNumber || '').replace(/[\s()+-]/g, '');
+  if (!/^[1-9]\d{7,14}$/.test(number)) return null;
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+}
+document.querySelectorAll('[data-whatsapp-enquiry]').forEach(link => {
+  const url = clinicWhatsAppUrl('Hello Little Leaf! I would like to enquire about an appointment. Please share your available times.');
+  if (!url) return;
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+});
+document.querySelector('#visit-form')?.addEventListener('submit', event => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  if (!form.reportValidity()) return;
+  const details = new FormData(form);
+  const selectedDate = String(details.get('date'));
+  const [year, month, day] = selectedDate.split('-').map(Number);
+  const dateLabel = new Intl.DateTimeFormat('en-IN', {day: 'numeric', month: 'long', year: 'numeric'}).format(new Date(year, month - 1, day));
+  const message = [
+    'Hello Little Leaf! I would like to enquire about an appointment.',
+    '',
+    `Parent / guardian: ${String(details.get('name')).trim()}`,
+    `Type of care: ${details.get('care')}`,
+    `Preferred date: ${dateLabel}`,
+    ...(String(details.get('email') || '').trim() ? [`Email: ${String(details.get('email')).trim()}`] : []),
+    '',
+    'Please confirm availability. I understand this enquiry does not confirm a booking.'
+  ].join('\n');
+  const url = clinicWhatsAppUrl(message);
+  const status = document.querySelector('#form-status');
+  status.hidden = false;
+  if (!url) {
+    status.textContent = 'WhatsApp booking is being set up. Please try again once the clinic contact number is confirmed.';
+    return;
+  }
+  status.replaceChildren(document.createTextNode('Your enquiry is ready. Review it in WhatsApp and press Send. '));
+  const fallback = document.createElement('a');
+  fallback.href = url;
+  fallback.target = '_blank';
+  fallback.rel = 'noopener noreferrer';
+  fallback.textContent = 'Open WhatsApp';
+  status.append(fallback);
+  window.open(url, '_blank', 'noopener,noreferrer');
+});
 document.querySelectorAll('#year').forEach(e=>e.textContent=new Date().getFullYear());
 
 // Keep the welcome moment brief, even if external fonts are slow to load.

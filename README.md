@@ -17,7 +17,9 @@ Open http://localhost:8080.
 - `assets/children.js`: mobile navigation and local demo form behavior.
 - Supporting HTML pages share the pediatric design. Original service URLs are retained for compatibility.
 
-The clinic identity and content are illustrative. The form does not send or store submissions and does not book appointments. Connect a booking service and add real clinic information before launch. Fonts load from Google Fonts; the generated clinic image is stored locally.
+The clinic identity and sample address are illustrative. The visit form prepares a WhatsApp enquiry using the parent name, care type, preferred date, and optional email. Visitors review and send the message in WhatsApp; the clinic must confirm the appointment. The application does not store form entries. Fonts load from Google Fonts; generated clinic images are stored locally.
+
+Set the WhatsApp recipient in `assets/clinic-config.js` using the country code and subscriber number, digits only. A floating WhatsApp button is available across all clinic pages.
 
 ## Original template credits
 
