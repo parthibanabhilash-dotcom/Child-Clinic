@@ -113,3 +113,31 @@ document.querySelectorAll('.button').forEach(button => {
     ripple.addEventListener('animationend', () => ripple.remove(), {once: true});
   });
 });
+
+// Pause the ambient scene when hidden or off screen; keep the user's choice.
+const ambientHero = document.querySelector('.ambient-hero');
+if (ambientHero) {
+  const ambientToggle = ambientHero.querySelector('.ambient-toggle');
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let heroOnScreen = true;
+  function updateAmbientPlayback() {
+    ambientHero.classList.toggle('scene-active', heroOnScreen && !document.hidden && !motionPreference.matches);
+  }
+  ambientToggle?.addEventListener('click', () => {
+    const paused = ambientHero.dataset.paused !== 'true';
+    ambientHero.dataset.paused = String(paused);
+    ambientToggle.setAttribute('aria-pressed', String(paused));
+    ambientToggle.querySelector('.ambient-toggle-label').textContent = paused ? 'Resume background' : 'Pause background';
+    ambientToggle.querySelector('.ambient-toggle-icon').textContent = paused ? '\u25b6' : '\u275a\u275a';
+  });
+  if ('IntersectionObserver' in window) {
+    const ambientObserver = new IntersectionObserver(entries => {
+      heroOnScreen = entries[0].isIntersecting;
+      updateAmbientPlayback();
+    });
+    ambientObserver.observe(ambientHero);
+  }
+  document.addEventListener('visibilitychange', updateAmbientPlayback);
+  motionPreference.addEventListener('change', updateAmbientPlayback);
+  updateAmbientPlayback();
+}
