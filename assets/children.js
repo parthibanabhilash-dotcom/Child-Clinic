@@ -144,6 +144,16 @@ if (ambientHero) {
 
 // Decorative SVG strokes keep text semantic and remain visible without motion.
 const svgNamespace = 'http://www.w3.org/2000/svg';
+if (!reducedMotion && 'IntersectionObserver' in window) {
+  const logoObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('logo-arrived');
+      logoObserver.unobserve(entry.target);
+    });
+  }, {threshold: 0.75});
+  document.querySelectorAll('footer .brand').forEach(brand => logoObserver.observe(brand));
+}
 document.querySelectorAll('.section-top h2>span, .booking-copy h2>span').forEach(text => {
   text.classList.add('heading-line');
   const svg = document.createElementNS(svgNamespace, 'svg');
