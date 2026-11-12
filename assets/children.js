@@ -141,3 +141,45 @@ if (ambientHero) {
   motionPreference.addEventListener('change', updateAmbientPlayback);
   updateAmbientPlayback();
 }
+
+// Decorative SVG strokes keep text semantic and remain visible without motion.
+const svgNamespace = 'http://www.w3.org/2000/svg';
+document.querySelectorAll('.section-top h2>span, .booking-copy h2>span').forEach(text => {
+  text.classList.add('heading-line');
+  const svg = document.createElementNS(svgNamespace, 'svg');
+  svg.setAttribute('viewBox', '0 0 240 10');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS(svgNamespace, 'path');
+  path.setAttribute('d', 'M3 7Q100 0 237 5');
+  path.setAttribute('pathLength', '1');
+  svg.append(path);
+  text.append(svg);
+});
+document.querySelectorAll('.service-card').forEach(card => {
+  const svg = document.createElementNS(svgNamespace, 'svg');
+  svg.classList.add('traced-border');
+  svg.setAttribute('viewBox', '0 0 300 360');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('aria-hidden', 'true');
+  const border = document.createElementNS(svgNamespace, 'rect');
+  for (const [attribute, value] of Object.entries({x: '1', y: '1', width: '298', height: '358', rx: '15', pathLength: '1'})) {
+    border.setAttribute(attribute, value);
+  }
+  svg.append(border);
+  card.append(svg);
+});
+document.querySelectorAll('.guide-icon svg path').forEach(path => path.setAttribute('pathLength', '1'));
+if (!reducedMotion && 'IntersectionObserver' in window) {
+  const lineObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('lines-visible');
+      lineObserver.unobserve(entry.target);
+    });
+  }, {threshold: 0.25});
+  document.querySelectorAll('.section-top, .first-visit-guide, .booking-copy').forEach(section => {
+    section.classList.add('line-watched');
+    lineObserver.observe(section);
+  });
+}
