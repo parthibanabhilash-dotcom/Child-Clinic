@@ -62,3 +62,9 @@ header{transition:box-shadow .3s ease,border-color .3s ease}header.has-scrolled{
 @media(prefers-reduced-motion:reduce){.toy-motion{animation:none!important;transform:none!important}.toy-pause{display:none}}
 /* The shared pause state takes precedence over an on-screen scene. */
 .site-ready.motion-paused .toy-scene.toy-active .toy-motion,.site-ready.page-hidden .toy-scene.toy-active .toy-motion{animation-play-state:paused!important}
+/* Reserve real layout space for the photo labels so they cannot cover each other. */
+.hero-visual{padding-bottom:0}.hero-image-details{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-top:20px;margin-right:14px;padding:0 2px 5px}.hero-image-details .care-note{position:relative;inset:auto;transform:none;margin:0;padding:15px 18px;flex:0 1 auto;max-width:100%;box-shadow:0 5px 18px #1c50310a}.hero-image-details .visual-label.handwritten{position:relative;inset:auto;transform:none;max-width:100%;font-size:25px;line-height:1.3;margin:0 0 0 auto}.hero .photo-caption{bottom:0;padding:14px 18px;line-height:1.5;background:#214d3da6}.site-ready .hero-image-details .care-note,.site-ready .hero-image-details .visual-label{animation:hero-rise .65s .5s both}
+@media(max-width:1050px){.hero-image-details{gap:15px}.hero-image-details .visual-label.handwritten{font-size:24px}}
+@media(max-width:760px){.hero-image-details{margin-right:0;margin-top:18px;padding:0;gap:17px}.hero-image-details .care-note{padding:14px 17px}.hero-image-details .visual-label.handwritten{font-size:25px;line-height:1.4}.hero .photo-caption{font-size:13px;padding:13px 12px}}
+@media(prefers-reduced-motion:reduce){.site-ready .hero-image-details .care-note,.site-ready .hero-image-details .visual-label{animation:none!important}}
+@media(prefers-reduced-motion:no-preference){.site-ready .hero .hero-image-details .care-note,.site-ready .hero .hero-image-details .visual-label{animation:hero-rise .65s .5s both}}
