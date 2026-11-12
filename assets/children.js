@@ -162,7 +162,6 @@ document.querySelectorAll('.button').forEach(button => {
 // Pause the ambient scene when hidden or off screen; keep the user's choice.
 const ambientHero = document.querySelector('.ambient-hero');
 if (ambientHero) {
-  const ambientToggle = ambientHero.querySelector('.ambient-toggle');
   const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   let heroOnScreen = true;
   function updateAmbientPlayback() {
@@ -180,21 +179,7 @@ if (ambientHero) {
   updateAmbientPlayback();
 }
 
-// One shared control pauses ongoing toy motion and the ambient background.
-function setDecorativeMotionPaused(paused) {
-  document.documentElement.classList.toggle('motion-paused', paused);
-  if (ambientHero) ambientHero.dataset.paused = String(paused);
-  document.querySelectorAll('[data-motion-toggle], .ambient-toggle').forEach(button => {
-    button.setAttribute('aria-pressed', String(paused));
-    button.querySelector('.motion-toggle-label, .ambient-toggle-label').textContent = paused ? 'Resume animations' : 'Pause animations';
-    const icon = button.querySelector('[aria-hidden="true"]');
-    if (icon) icon.textContent = paused ? '\u25b6' : '\u275a\u275a';
-  });
-}
-document.querySelectorAll('[data-motion-toggle], .ambient-toggle').forEach(button => {
-  button.addEventListener('click', () => setDecorativeMotionPaused(!document.documentElement.classList.contains('motion-paused')));
-});
-setDecorativeMotionPaused(false);
+// Pause decorative toys automatically while they are off screen.
 if ('IntersectionObserver' in window) {
   const toyObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => entry.target.classList.toggle('toy-active', entry.isIntersecting));
