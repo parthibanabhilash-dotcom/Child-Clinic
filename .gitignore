@@ -1,0 +1,14 @@
+﻿# OS metadata
+.DS_Store
+__MACOSX/
+
+# Local screenshots used for design verification
+/*-preview.png
+/larger-font-desktop.png
+/larger-font-mobile.png
+
+# Dependencies and local configuration
+node_modules/
+.env
+.env.*
+!.env.example
