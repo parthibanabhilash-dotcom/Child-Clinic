@@ -123,13 +123,6 @@ if (ambientHero) {
   function updateAmbientPlayback() {
     ambientHero.classList.toggle('scene-active', heroOnScreen && !document.hidden && !motionPreference.matches);
   }
-  ambientToggle?.addEventListener('click', () => {
-    const paused = ambientHero.dataset.paused !== 'true';
-    ambientHero.dataset.paused = String(paused);
-    ambientToggle.setAttribute('aria-pressed', String(paused));
-    ambientToggle.querySelector('.ambient-toggle-label').textContent = paused ? 'Resume background' : 'Pause background';
-    ambientToggle.querySelector('.ambient-toggle-icon').textContent = paused ? '\u25b6' : '\u275a\u275a';
-  });
   if ('IntersectionObserver' in window) {
     const ambientObserver = new IntersectionObserver(entries => {
       heroOnScreen = entries[0].isIntersecting;
@@ -141,6 +134,33 @@ if (ambientHero) {
   motionPreference.addEventListener('change', updateAmbientPlayback);
   updateAmbientPlayback();
 }
+
+// One shared control pauses ongoing toy motion and the ambient background.
+function setDecorativeMotionPaused(paused) {
+  document.documentElement.classList.toggle('motion-paused', paused);
+  if (ambientHero) ambientHero.dataset.paused = String(paused);
+  document.querySelectorAll('[data-motion-toggle], .ambient-toggle').forEach(button => {
+    button.setAttribute('aria-pressed', String(paused));
+    button.querySelector('.motion-toggle-label, .ambient-toggle-label').textContent = paused ? 'Resume animations' : 'Pause animations';
+    const icon = button.querySelector('[aria-hidden="true"]');
+    if (icon) icon.textContent = paused ? '\u25b6' : '\u275a\u275a';
+  });
+}
+document.querySelectorAll('[data-motion-toggle], .ambient-toggle').forEach(button => {
+  button.addEventListener('click', () => setDecorativeMotionPaused(!document.documentElement.classList.contains('motion-paused')));
+});
+setDecorativeMotionPaused(false);
+if ('IntersectionObserver' in window) {
+  const toyObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => entry.target.classList.toggle('toy-active', entry.isIntersecting));
+  });
+  document.querySelectorAll('.toy-scene').forEach(scene => toyObserver.observe(scene));
+}
+function updateToyVisibility() {
+  document.documentElement.classList.toggle('page-hidden', document.hidden);
+}
+document.addEventListener('visibilitychange', updateToyVisibility);
+updateToyVisibility();
 
 // Decorative SVG strokes keep text semantic and remain visible without motion.
 const svgNamespace = 'http://www.w3.org/2000/svg';
